@@ -1,14 +1,4 @@
-cyc_dict = {
-    'add':3,
-    'sub':3,
-    'mul':4,
-    'cmp':2,
-    'div':9,
-    'exp':7,
-    'pw2':6,
-    'mtf':9,
-    'bub':0
-}
+from config.config_file import *
 
 class instruction:
     """dataclass to track a instruction"""
@@ -17,13 +7,13 @@ class instruction:
         """construct the instruction dataclass with argv"""
         """len(argv) = 1: only setup inst"""
         """len(argv) > 1: setup inst & src"""
-        assert(inst in ['add','sub','mul','cmp','div','exp','pw2','mtf','bub'])
+        assert(inst in INSTRUCTIONS)
         self.inst = inst
         self.datalength = data_len
         self.src_list = []
         self.finished_stage = 0
         self.issued_stage = 0
-        self.pipedepth = cyc_dict[f'{self.inst}']
+        self.pipedepth = CYC_DICT[f'{self.inst}']
 
     def issue(self):
         """ """
@@ -40,6 +30,13 @@ class instruction:
     def is_bub(self):
         """check if this instruction was a bulb,if so return true"""
         return self.inst == 'bub'
+    
+    def get_inst(self):
+        return self.inst
+    
+    def issue_done(self):
+        """check if the instruction nolonger need to be stalled in waiting queue"""
+        return self.issued_stage == self.datalength
     
     def execute_done(self):
         """check if the instruction nolonger need to be stalled in instruction queue"""
@@ -87,21 +84,39 @@ class inst_queue():
     """ instruction queue to be executed by alu"""    
     def __init__(self, depth: int):
         self.depth = depth
-        self.queue = []
+        self.waiting_queue = []
+        self.issued_queue = []
 
     def has_space(self):
-        return len(self.queue) < self.depth
+        return (len(self.queue) + len(self.exe_queue)) < self.depth
 
-    def insert(self,inst: instruction) :
+    def pop_in(self,inst: instruction) :
         """insert the inst_id to last empty slot ret non zero: successfully insert"""
         assert self.has_space()
-        self.queue.append(inst)
+        self.waiting_queue.append(inst)
 
-    def pop(self):
+    def issue_done(self):
+        assert self.waiting_queue[0].issue_done()
+        self.issued_queue.append(self.waiting_queue.pop(0))
+
+    def pop_w(self):
         """pop the first instruction and return"""
-        return self.queue.pop(0)
-
-    def peek(self):
+        last_inst = self.peek_w()
+        if last_inst.issue_done():
+            self.issue_done()
+            return last_inst
+        else:
+            return self.waiting_queue.pop(0)
+    
+    def peek_w(self):
         """peek the last instruction"""
-        return self.queue[0]
+        return self.waiting_queue[0]
+    
+    def pop_i(self):
+        """pop the first instruction and return"""
+        return self.issued_queue.pop(0)
+
+    def peek_i(self):
+        """peek the last instruction"""
+        return self.issued_queue[0]
     
