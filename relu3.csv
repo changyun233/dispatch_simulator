@@ -1,0 +1,13 @@
+id,inst
+1,beq
+2,reg
+3,cmp
+4,reg
+5,beq
+6,reg
+7,cmp
+8,reg
+9,beq
+10,reg
+11,cmp
+12,reg

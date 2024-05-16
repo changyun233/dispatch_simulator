@@ -1,0 +1,65 @@
+{
+    "alu":[
+        {
+            "inst": "add",
+            "id":   0,
+            "inst_q":  4
+        },
+        {
+            "inst": "add",
+            "id":   1,
+            "inst_q":  4
+        },
+        {
+            "inst": "sub",
+            "id":   0,
+            "inst_q":  4
+        },
+        {
+            "inst": "sub",
+            "id":   1,
+            "inst_q":  4
+        },
+        {
+            "inst": "mul",
+            "id":   0,
+            "inst_q":  5
+        },
+        {
+            "inst": "mul",
+            "id":   1,
+            "inst_q":  5
+        },
+        {
+            "inst": "cmp",
+            "id":   0,
+            "inst_q":  3
+        },
+        {
+            "inst": "cmp",
+            "id":   1,
+            "inst_q":  3
+        },
+        {
+            "inst": "div",
+            "id":   0,
+            "inst_q":  10
+        },
+        {
+            "inst": "exp",
+            "id":   0,
+            "inst_q":  8
+        },
+        {
+            "inst": "pw2",
+            "id":   0,
+            "inst_q":  7
+        },
+        {
+            "inst": "mtf",
+            "id":   0,
+            "inst_q":  9
+        }
+
+    ]
+}
