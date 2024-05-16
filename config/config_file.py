@@ -10,7 +10,7 @@ CYC_DICT = {
     'bub':0
 }
 
-TOPOLOGY = {
+EXE_CONFIG = {
     'add':{
         'cnt':2,
         'isq':4

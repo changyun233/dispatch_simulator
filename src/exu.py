@@ -3,7 +3,6 @@
 # the alu name and id could be configured 
 #
 from src.base import *
-from config.config_file import *
 
 class exu():
     def __init__(self,topo_dict):
@@ -15,6 +14,10 @@ class exu():
 
     def __str__(self) -> str:
         return f'{self.topodict}'
+    
+    def wakeup(self):
+        wb_inst_list = []
+        return wb_inst_list
 
     def has_space(self,alu_key:str,alu_id:int):
         return self.topodict[f'{alu_key}'][alu_id].has_space()
@@ -57,9 +60,10 @@ class alu():
             finished_inst = self.pipeline.pop(poped_inst)
         else :
             finished_inst = self.pipeline.pop(instruction('bub'))
-        if not finished_inst.is_bub():
-            finished_inst.finish()
-            if finished_inst.execute_done():
-                self.inst_queue.pop_i()
+        if finished_inst.execute_done():
+            return self.inst_queue.pop_i()
+        else:
+            return self.inst_queue.peek_i()
+        
 
     

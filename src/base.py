@@ -21,7 +21,7 @@ class instruction:
         assert(self.issued_stage < self.datalength)
         return self.log()
 
-    def finish(self):
+    def wb(self):
         """ """
         self.finished_stage += 1
         assert(self.finished_stage < self.issued_stage)
