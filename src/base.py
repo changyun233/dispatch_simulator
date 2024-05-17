@@ -3,17 +3,25 @@ from config.config_file import *
 class instruction:
     """dataclass to track a instruction"""
     
-    def __init__(self,inst:str,data_len:int=4,src = []):
+    def __init__(self,inst:str,addr:int = 0, data_len:int=4,src:list  = []):
         """construct the instruction dataclass with argv"""
         """len(argv) = 1: only setup inst"""
         """len(argv) > 1: setup inst & src"""
         assert(inst in INSTRUCTIONS)
         self.inst = inst
+        self.addr = addr
         self.datalength = data_len
-        self.src_list = []
+        self.src_list = src
         self.finished_stage = 0
         self.issued_stage = 0
         self.pipedepth = CYC_DICT[f'{self.inst}']
+
+    def __str__(self):
+        return f'{self.inst}-{self.addr:0>3d}'
+
+    def addr(self):
+        """public function,get addr of this instruction, for debug"""
+        return self.addr
 
     def issue(self):
         """ """
@@ -21,10 +29,10 @@ class instruction:
         assert(self.issued_stage < self.datalength)
         return self.log()
 
-    def wb(self):
+    def reg(self):
         """ """
         self.finished_stage += 1
-        assert(self.finished_stage < self.issued_stage)
+        assert(self.finished_stage <= self.issued_stage)
         return self.log()
     
     def is_bub(self):
@@ -54,22 +62,28 @@ class instruction:
         for src_inst in self.src_list:
             chk_list.append(src_inst.dep_chk(self.issued_stage))
         return False not in chk_list
+    
+    def set_src(self,inst_list:list) :
+        self.src_list = inst_list
+        return self
 
     def log(self):
         """return current stage"""
 
         return f'{self.inst}:{self.id:3}*{self.datalength};\
                 src:{self.src1:3}.{self.src2:3};\
-                wb:{self.finished_stage};issue:{self.issued_stage}'
+                reg:{self.finished_stage};issue:{self.issued_stage}'
     
 
 class simple_inst_queue():
     def __init__(self, depth: int):
         self.queue = [instruction('bub')] * depth
-        return 0
     
     def __str__(self):
-        return self.queue
+        ret_str = ''
+        for inst in self.queue:
+            ret_str = ret_str+f'{inst.addr():0>3d},'
+        return ret_str[:-1]
 
 class pipeline(simple_inst_queue):
     """alu pipeline"""
@@ -88,7 +102,10 @@ class inst_queue():
         self.issued_queue = []
 
     def has_space(self):
-        return (len(self.queue) + len(self.exe_queue)) < self.depth
+        return (len(self.waiting_queue) + len(self.issued_queue)) < self.depth
+    
+    def has_inst(self):
+        return (len(self.waiting_queue) + len(self.issued_queue)) > 0
 
     def pop_in(self,inst: instruction) :
         """insert the inst_id to last empty slot ret non zero: successfully insert"""

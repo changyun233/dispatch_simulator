@@ -2,12 +2,13 @@ from src.base import *
 
 class vrf():
     def __init__(self) -> None:
-        self.wb_inst_list = []
+        self.reg_inst_list = []
 
     def wakeup(self):
-        for sing_inst in self.wb_inst_list:
-            sing_inst.wb()
-        self.wb_inst_list = []
+        for single_inst in self.reg_inst_list:
+            single_inst.reg()
+        self.reg_inst_list = []
 
-    def writeback(self,inst_list:lsit):
-        self.wb_inst_list = inst_list
+    def insert(self,inst_list:list):
+        self.reg_inst_list = inst_list
+        
