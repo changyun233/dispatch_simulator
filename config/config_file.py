@@ -1,4 +1,6 @@
 CYC_DICT = {
+    'ldu':5,
+    'sdu':5,
     'add':3,
     'sub':3,
     'mul':4,
@@ -11,6 +13,14 @@ CYC_DICT = {
 }
 
 EXE_CONFIG = {
+    'ldu':{
+        'cnt':2,
+        'isq':6
+    },
+    'sdu':{
+        'cnt':1,
+        'isq':6
+    },
     'add':{
         'cnt':2,
         'isq':4
@@ -45,4 +55,4 @@ EXE_CONFIG = {
     },
 }
 
-INSTRUCTIONS = ['add','sub','mul','cmp','div','exp','pw2','mtf','bub']
+INSTRUCTIONS = ['ldu','sdu','add','sub','mul','cmp','div','exp','pw2','mtf','bub']

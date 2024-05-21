@@ -3,7 +3,7 @@
 # simply read instruction from file
 #
 
-from src.base import *
+from src.base.all import *
 import src
 import json
 
@@ -28,10 +28,14 @@ def file_parser(file_in:str) -> list:
     return_list.pop(0)
     return return_list
 
-class fetch():
+class fetch(clocked_object):
     def __init__(self,inst_file) -> None:
+        super().__init__('fetch')
         self.inst_list = file_parser(inst_file)
         self.dispatch_U = 0
+
+    def log(self) -> dict:
+        return {f'{self._name}':str(self)}
 
     def wakeup(self) -> None :
         """pop out a instruction if dispatch has space"""
@@ -40,10 +44,24 @@ class fetch():
         else:
             self.dispatch_U.insert(instruction('bub'))
 
-    def connect(self,disp_u) -> None:
+    def connect(self,disp_u:clocked_object) -> None:
         """set dispatch connection"""
+        assert(disp_u.get_name)
         self.dispatch_U = disp_u
 
     def is_free(self) -> bool:
         """if the fetch unit has sent all instructions"""
         return len(self.inst_list) == 0
+    
+    def insert(self,inst:instruction):
+        self.inst_list.append(inst)
+
+    def __str__(self):
+        ret_str = ''
+        for inst in self.inst_list:
+            ret_str = ret_str+f'{inst.get_addr():0>3d} '
+        return ret_str[:-1]
+
+
+
+        

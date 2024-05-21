@@ -1,7 +1,15 @@
 from config.config_file import *
 from src.core import core
+import sys
 
-core_U = core(['test/test1.csv','inorde'])
+def main(argv):
+    core_U = core(argv)
 
-core_U.wakeup()
+    for i in range(60):
+        core_U.wakeup(i)
 
+    core_U.scroop_U.insert()
+    core_U.recorder_U.insert()
+
+if __name__=="__main__":
+    main(sys.argv[1:])
