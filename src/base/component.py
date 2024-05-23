@@ -27,6 +27,12 @@ class inst_queue(simple_inst_queue):
         self.issued_queue = []
         self.depth = depth
 
+    def get_remain(self) -> int:
+        return self.depth - len(self.waiting_queue) - len(self.issued_queue)
+
+    def is_empty(self):
+        return (len(self.waiting_queue) + len(self.issued_queue)) == 0
+
     def has_space(self):
         return (len(self.waiting_queue) + len(self.issued_queue)) < self.depth
     

@@ -22,7 +22,7 @@ class dispatch(clocked_object):
             pass
         else: # a valid instruction
             alu_id = self.top_arb(self.dispatch_slot[0])
-            print(f'{self.dispatch_slot[0].get_addr()}issued to alu{alu_id}')
+            print(f'{self.dispatch_slot[0].get_addr()}issued to {self.dispatch_slot[0].get_inst()}{alu_id}')
             if alu_id == -1: # no alu space
                 pass
             else:
@@ -31,11 +31,9 @@ class dispatch(clocked_object):
             
     def top_arb(self, inst: instruction ) -> int:
         arb_sel = {
-            'glb_rr':self.glb_rr_arb,
-            'loc_rr':self.local_rr_arb,
-            'glb_bq':self.glb_brq_arb,
-            'loc_bq':self.local_brq_arb,
-            'inorde':self.in_order_arb
+            'global_rr':self.glb_rr_arb,
+            'inorder':self.in_order_arb,
+            'balance':self.load_blc_arb
         }
         try:
             function = arb_sel[self.arb_methord]
@@ -43,15 +41,16 @@ class dispatch(clocked_object):
         except KeyError:
             raise ValueError('invald arb method')
     
-    def glb_rr_arb(self,inst: instruction) -> int:
+    def load_blc_arb(self,inst: instruction) -> int:
         """all instruction share a rr reg"""
-        return -1
+        remain_list = self.exe_U.get_remain_list(inst.get_inst())
+        max_remain = max(remain_list)
+        if max_remain == 0:
+            return -1
+        else:
+            return remain_list.index(max(remain_list))
     
-    def local_rr_arb(self,inst: instruction) -> int:
-        """each instruction has its own rr reg"""
-        return -1
-    
-    def glb_brq_arb(self,inst: instruction) -> int:
+    def glb_rr_arb(self,inst: instruction) -> int:
         """all instruction share a rr reg"""
         freelist = self.exe_U.get_free_list(inst.get_inst())
         if len(freelist) < 1:
@@ -62,10 +61,6 @@ class dispatch(clocked_object):
             self.rr_ptr = not self.rr_ptr
             return freelist[self.rr_ptr]
     
-    def local_brq_arb(self,inst: instruction) -> int:
-        """each instruction has its own rr reg"""
-        return -1
-
     def in_order_arb(self,inst: instruction) -> int:
         """if 1st alu has free space,insert into 1st"""
         freelist = self.exe_U.get_free_list(inst.get_inst())

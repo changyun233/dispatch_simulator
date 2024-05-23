@@ -33,6 +33,7 @@ class fetch(clocked_object):
         super().__init__('fetch')
         self.inst_list = file_parser(inst_file)
         self.dispatch_U = 0
+        self.dispatch_full = False
 
     def log(self) -> dict:
         return {f'{self._name}':str(self)}
@@ -43,6 +44,10 @@ class fetch(clocked_object):
             self.dispatch_U.insert(self.inst_list.pop(0))
         else:
             self.dispatch_U.insert(instruction('bub'))
+            self.dispatch_full = True
+
+    def ft_dp_full(self) -> bool:
+        return self.dispatch_full
 
     def connect(self,disp_u:clocked_object) -> None:
         """set dispatch connection"""

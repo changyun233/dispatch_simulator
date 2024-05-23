@@ -42,3 +42,15 @@ class core():
         self.scroop_U.wakeup(cycle)
         self.recorder_U.wakeup(cycle)
         pass
+
+    def start_execution(self) -> None:
+        self.exe_U.start_execution()
+
+    def issue_full(self) -> bool:
+        return self.fetch_U.ft_dp_full()
+    
+    def fetch_empty(self) -> bool:
+        return self.fetch_U.is_free()
+    
+    def issue_done(self) -> bool:
+        return self.exe_U.is_empty()

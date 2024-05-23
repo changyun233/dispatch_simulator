@@ -27,6 +27,14 @@ class alu():
         """whether this alu cmd queue has room for new one"""
         return self.inst_queue.has_space()
     
+    def get_remain(self) ->int:
+        """return the remain slot for coming instruction"""
+        return  self.inst_queue.get_remain()
+    
+    def is_empty(self) -> bool:
+        """whether this alu cmd queue was empty"""
+        return self.inst_queue.is_empty()
+    
     def insert(self,inst: instruction):
         """insert new instruction """
         assert inst.get_inst() == self.inst
@@ -102,6 +110,10 @@ class exe(clocked_object):
         """get all free alu index for this alu key"""
         return [idx for idx,alu in enumerate(self.topodict[f'{alu_key}']) if alu.has_space()]
 
+    def get_remain_list(self,alu_key:str) -> list:
+        """get alu remain slot cnt list"""
+        return [alu.get_remain() for idx,alu in enumerate(self.topodict[f'{alu_key}'])]
+
     def has_space(self,alu_key:str,alu_id:int):
         return self.topodict[f'{alu_key}'][alu_id].has_space()
 
@@ -118,6 +130,15 @@ class exe(clocked_object):
     def start_execution(self) -> None:
         """assert self.start_execution to HIGH to start alu pipeline"""
         self.execution_begin = True
+
+    def is_empty(self) -> bool:
+        """whether all alu's cmd queue has been issued"""
+        ret_val = True
+        for alu_key,alu_list in self.topodict.items():
+            for alu in alu_list:
+                ret_val = ret_val and alu.is_empty()
+        return ret_val 
+        
 
 
 
