@@ -54,7 +54,7 @@ class alu():
         
         #select a inst from inst_queue
         self.inst_queue.pop_exed()
-
+        
         if self.inst_queue.can_issue():
             return self.pipeline.pop(self.inst_queue.issue())
         else:
@@ -66,6 +66,7 @@ class exe(clocked_object):
         """create the exe unit according to the topology dict"""
         super().__init__('exe')
         self.topodict = {}
+        self.execution_begin = False
         for alu_key,alu_config in topo_dict.items():
             alu_list = [alu(alu_key,alu_config['isq']) for i in range(alu_config['cnt'])]
             self.topodict[f'{alu_key}'] = alu_list
@@ -90,9 +91,10 @@ class exe(clocked_object):
 
     def wakeup(self):
         vrf_list = []
-        for alu_key,alu_list in self.topodict.items():
-            for alu in alu_list:
-                vrf_list.append(alu.wakeup())
+        if self.execution_begin:
+            for alu_key,alu_list in self.topodict.items():
+                for alu in alu_list:
+                    vrf_list.append(alu.wakeup())
         self.vrf.insert(vrf_list)
         return 0
     
@@ -112,6 +114,10 @@ class exe(clocked_object):
     def connect(self,vrf:clocked_object) -> None:
         """set dispatch connection"""
         self.vrf = vrf
+
+    def start_execution(self) -> None:
+        """assert self.start_execution to HIGH to start alu pipeline"""
+        self.execution_begin = True
 
 
 
