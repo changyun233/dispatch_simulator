@@ -115,6 +115,8 @@ class exe(clocked_object):
         return [alu.get_remain() for idx,alu in enumerate(self.topodict[f'{alu_key}'])]
 
     def has_space(self,alu_key:str,alu_id:int):
+        assert len(self.topodict[f'{alu_key}']) >= alu_id, \
+            f"[error] Referring to {alu_key}:{alu_id} while max id being {alu_key}:{len(self.topodict[f'{alu_key}'])}"
         return self.topodict[f'{alu_key}'][alu_id].has_space()
 
     def insert(self,inst:instruction,alu_id:int):

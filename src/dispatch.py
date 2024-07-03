@@ -22,7 +22,7 @@ class dispatch(clocked_object):
             pass
         else: # a valid instruction
             alu_id = self.top_arb(self.dispatch_slot[0])
-            print(f'{self.dispatch_slot[0].get_addr()}issued to {self.dispatch_slot[0].get_inst()}{alu_id}')
+            # print(f'{self.dispatch_slot[0].get_addr()}issued to {self.dispatch_slot[0].get_inst()}{alu_id}')
             if alu_id == -1: # no alu space
                 pass
             else:
@@ -33,7 +33,8 @@ class dispatch(clocked_object):
         arb_sel = {
             'global_rr':self.glb_rr_arb,
             'inorder':self.in_order_arb,
-            'balance':self.load_blc_arb
+            'balance':self.load_blc_arb,
+            'manually':self.manually_arb
         }
         try:
             function = arb_sel[self.arb_methord]
@@ -68,6 +69,18 @@ class dispatch(clocked_object):
             return -1
         else:
             return freelist[0]
+        
+    def manually_arb(self,inst: instruction) -> int:
+        '''
+        manually dispatch in accordance with the inst file
+        '''
+        # print(f'manually_arb -> {inst.get_inst()} at {inst.get_dispatch_target()}')
+        assert inst.get_dispatch_target() != -1, \
+            f'[error] No specific assignment found for this instrution -> {inst.get_addr()}: {inst.get_inst()} {inst.get_dispatch_target()}'
+        if not self.exe_U.has_space(inst.get_inst(), inst.get_dispatch_target()):
+            return -1
+        else:
+            return inst.get_dispatch_target()
     
     
     def has_space(self) -> bool:
