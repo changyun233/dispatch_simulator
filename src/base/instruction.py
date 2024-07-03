@@ -3,10 +3,11 @@ from src.base.base import *
 class instruction(regular_object):
     """dataclass to track a instruction"""
     
-    def __init__(self,inst:str,addr:int = 0, data_len:int=4,src:list  = []):
+    def __init__(self,inst:str,addr:int = 0, data_len:int=4,tar:int = -1,src:list  = []):
         """construct the instruction dataclass with argv"""
         """len(argv) = 1: only setup inst"""
-        """len(argv) > 1: setup inst & src"""
+        """len(argv) = 2: setup inst & src"""
+        """len(argv) = 3: setup inst & src & dispatchTarget"""
         assert(inst in INSTRUCTIONS)
         self.inst = inst
         self.addr = addr
@@ -15,6 +16,7 @@ class instruction(regular_object):
         self.finished_stage = 0
         self.issued_stage = 0
         self.pipedepth = CYC_DICT[f'{self.inst}']
+        self.dispatch_target = tar
 
     def __str__(self):
         return f'{self.addr:3}{self.inst}*{self.datalength} R:{self.finished_stage} I:{self.issued_stage} S:{self.get_src_id()}'
@@ -71,3 +73,6 @@ class instruction(regular_object):
     def get_src_id(self):
         return [inst.get_addr() for inst in self.src_list]
         
+
+    def get_dispatch_target(self):
+        return self.dispatch_target

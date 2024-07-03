@@ -15,7 +15,12 @@ def line_parser(inst_line:str) -> instruction:
     cmd = str_list[1]
     data_len = int(str_list[2])
     src_list = json.loads(str_list[3])
-    inst_return = instruction(cmd,addr,data_len)
+    if len(str_list) > 4:
+        dispatch_target = int(str_list[4])
+        inst_return = instruction(cmd,addr,data_len,dispatch_target)
+        # print(dispatch_target, inst_return.get_dispatch_target())
+    else:
+        inst_return = instruction(cmd,addr,data_len)
     return (inst_return,src_list) 
 
 def file_parser(file_in:str) -> list:
